@@ -16,8 +16,17 @@ set -a
 source .env
 
 DB_PASSWORD=$(echo "$DATABASE_URL" | awk -F':' '{print $3}' | awk -F'@' '{print $1}')
-DB_PORT=$(echo "$DATABASE_URL" | awk -F':' '{print $4}' | awk -F'\/' '{print $1}')
+DB_PORT=$(echo "$DATABASE_URL" | awk -F':' '{print $4}' | awk -F'/' '{print $1}')
 DB_NAME=$(echo "$DATABASE_URL" | awk -F'/' '{print $4}')
+
+# Fallback auf Standardwerte, falls nicht gesetzt
+if [ -z "$DB_PORT" ]; then
+  DB_PORT=5433
+fi
+if [ -z "$DB_NAME" ]; then
+  DB_NAME=fahndung
+fi
+
 DB_CONTAINER_NAME="$DB_NAME-postgres"
 
 if ! [ -x "$(command -v docker)" ] && ! [ -x "$(command -v podman)" ]; then
